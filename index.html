@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>年会摇一摇</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+		<style>
+			#info {
+				padding: 20px 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="background-color: red;">
+			<h1 class="mui-title">开心快乐抽大奖</h1>
+		</header>
+		<div class="mui-content">
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({});
+			openLoginDialog();
+			var info = document.getElementById("info");
+
+			function openLoginDialog() {
+				var btnArray = ['确定'];
+				mui.prompt('请输入注册您的工号：', '工号:00xxxxxx', '年会抽奖摇一摇', btnArray, function(e) {
+					if(e.index == 0) {
+						registerIdToServer(e.value);
+					}
+				})
+			}
+
+			function registerIdToServer(id) {
+				alert(id);
+				initShakeMotion();
+			}
+			var SHAKE_THRESHOLD = 3000;
+			var last_update = 0;
+			var x = y = z = last_x = last_y = last_z = 0;
+			function initShakeMotion() {
+				if(window.DeviceMotionEvent) {
+					window.addEventListener('devicemotion', deviceMotionHandler, false);
+				} else {
+					alert('not support mobile event');
+				}
+			}
+
+			function deviceMotionHandler(eventData) {
+				var acceleration = eventData.accelerationIncludingGravity;
+				var curTime = new Date().getTime();
+				if((curTime - last_update) > 100) {
+					var diffTime = curTime - last_update;
+					last_update = curTime;
+					x = acceleration.x;
+					y = acceleration.y;
+					z = acceleration.z;
+					var speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+
+					if(speed > SHAKE_THRESHOLD) {
+						alert("摇动了");
+						media.setAttribute("src", "http://211.148.5.228:8002/Pages/test/Kalimba.mp3");
+						media.load();
+						media.play();
+					}
+					last_x = x;
+					last_y = y;
+					last_z = z;
+				}
+			}
+		</script>
+	</body>
+
+</html>
